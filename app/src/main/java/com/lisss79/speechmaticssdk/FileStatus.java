@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения статуса файла для обработки
+ */
 public enum FileStatus {
 
     NOT_SELECTED("", "не выбран", "not selected"),

@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения типа работы
+ */
 public enum JobType {
 
     //ALIGNMENT("alignment", "выравнивание", "alignment),

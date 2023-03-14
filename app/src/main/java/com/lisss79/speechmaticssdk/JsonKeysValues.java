@@ -1,5 +1,8 @@
 package com.lisss79.speechmaticssdk;
 
+/**
+ * Статические поля с ключами для расшифровки ответов сервера
+ */
 public class JsonKeysValues {
 
     // Ключи для обработки ответов

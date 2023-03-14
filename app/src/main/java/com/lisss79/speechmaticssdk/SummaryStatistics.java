@@ -8,6 +8,9 @@ import static com.lisss79.speechmaticssdk.JsonKeysValues.JOB_TYPE;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Общая статистика
+ */
 public class SummaryStatistics {
 
     private String mode;

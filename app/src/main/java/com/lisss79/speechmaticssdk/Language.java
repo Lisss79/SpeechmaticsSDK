@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения языков
+ */
 public enum Language {
 
     EN("en", "английский", "English"),

@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.ArrayList;
 
+/**
+ * Интерфейс с callback'ами, вызываемыми по завершении обращений к серверу
+ */
 public interface SpeechmaticsListener {
 
     /**

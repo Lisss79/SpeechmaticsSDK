@@ -7,6 +7,9 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Конфигурация для выравнивания
+ */
 public class AlignmentConfig {
 
     private Language language;

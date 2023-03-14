@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения диаризации
+ */
 public enum Diarization {
     NONE("none", "нет", "none"),
     SPEAKER("speaker", "спикеры", "speaker");

@@ -16,6 +16,9 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
+/**
+ * Детали работы
+ */
 public class JobDetails {
 
     private String createdAt;

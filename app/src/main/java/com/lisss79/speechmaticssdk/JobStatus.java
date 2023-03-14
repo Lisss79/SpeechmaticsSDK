@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения статуса работы
+ */
 public enum JobStatus {
 
     NONE("", "не создана", "not created"),

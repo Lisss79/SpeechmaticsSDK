@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Конфигурация расшифровки
+ */
 public class TranscriptionConfig {
 
     private Language language;

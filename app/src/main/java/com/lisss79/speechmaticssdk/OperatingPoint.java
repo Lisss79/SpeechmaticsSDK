@@ -2,6 +2,9 @@ package com.lisss79.speechmaticssdk;
 
 import java.util.Locale;
 
+/**
+ * Допустимые значения точности расшифровки
+ */
 public enum OperatingPoint {
     STANDARD("standard", "стандартное", "standard"),
     ENHANCED("enhanced", "улучшенное", "enhanced");

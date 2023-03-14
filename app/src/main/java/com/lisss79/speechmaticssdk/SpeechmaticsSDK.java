@@ -43,6 +43,9 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Основной класс для взаимодействия с API сервера Speechmatics
+ */
 public class SpeechmaticsSDK {
 
     // Идентификаторы задач для handler'а
@@ -171,8 +174,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Проверка корректности авторизации
-     * Ответ с кодом HTTP в onAuthorizationCheckFinished
+     * Проверка корректности авторизации.
+     * По окончании - вызов onAuthorizationCheckFinished.
      */
     public void checkAuthorization() {
         service.execute(() -> {
@@ -185,8 +188,9 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Отправить текущий файл на сервер для расшифровки:
-     * Выполнение запроса POST и отправление данных из файла
+     * Отправка текущего файла на сервер для расшифровки:
+     * выполнение запроса POST и отправление данных из файла.
+     * По окончании - вызов onSubmitJobFinished.
      * @param uri ссылка на файл с данными
      * @param jobConfig конфигурация работы
      */
@@ -308,7 +312,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Удаление работы с сервера
+     * Удаление работы с сервера.
+     * По окончании - вызов onDeleteJobFinished.
      * @param id идентификатор работы
      */
     public void deleteJob(@NonNull String id) {
@@ -330,7 +335,8 @@ public class SpeechmaticsSDK {
 
 
     /**
-     * Получение деталей работы с сервера
+     * Получение деталей работы с сервера.
+     * По окончании - вызов onGetJobDetailsFinished.
      * @param id идентификатор работы
      */
     public void getJobDetails(@NonNull String id) {
@@ -360,7 +366,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Получения деталей всех работ с сервера
+     * Получения деталей всех работ с сервера.
+     * По окончании - вызов onGetAllJobsDetailsFinished.
      */
     public void getAllJobsDetails(boolean includeDeleted) {
         service.execute(() -> {
@@ -393,7 +400,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Получение общей статистики
+     * Получение общей статистики.
+     * По окончании - вызов onGetStatisticsFinished.
      * @param monthly true - за месяц, false - за весь срок
      */
     public void getStatistics(boolean monthly, int requestCode) {
@@ -445,7 +453,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Получение расшифровки с сервера
+     * Получение расшифровки с сервера.
+     * По окончании - вызов onGetTheTranscriptFinished.
      * @param id идентификатор работы
      * @param requestCode код запроса, передается в ответ для идентификации
      */
@@ -464,7 +473,8 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Получение выравнивания с сервера
+     * Получение выравнивания с сервера.
+     * По окончании - вызов onGetTheAlignmentFinished.
      * @param id идентификатор работы
      * @param requestCode код запроса, передается в ответ для идентификации
      */
@@ -482,6 +492,12 @@ public class SpeechmaticsSDK {
         });
     }
 
+    /**
+     * Получение значения ключа из JSON
+     * @param jsonString
+     * @param key
+     * @return
+     */
     private String getValue(String jsonString, String key) {
         JSONObject jsonObject;
         String value = "";
@@ -564,7 +580,7 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Сохранение текста в файл
+     * Сохранение текста расшифровки в файл
      * @param uri ссылка на содержимое файла
      * @param text текст, который пишется в файл
      * @return успешно ли записан текст в файл
@@ -595,7 +611,7 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Сохранение текста в буфер обмена
+     * Сохранение текста расшифровки в буфер обмена
      * @param text текст, который пишется в файл
      */
     public void copyToClipboard(String text) {
@@ -606,7 +622,7 @@ public class SpeechmaticsSDK {
     }
 
     /**
-     * Передача файла для обработки
+     * Передача файла для дальнейшей обработки и проверка на корректность
      * @param uri ссылка на содержимое файла
      * @return успешно ли прочитаны данные из файла
      */
@@ -733,6 +749,7 @@ public class SpeechmaticsSDK {
 
     /**
      * Преобразует полученное от сервера значение общей длительности записей в часах
+     * в удобный формат
      * @param durationHrs ответ от сервера в текстовом формате
      * @return строка, удобная для чтения пользователем
      */
@@ -760,6 +777,7 @@ public class SpeechmaticsSDK {
 
     /**
      * Преобразует полученное от сервера значение длительности записи c секундах
+     * в удобный формат
      * @param duration ответ от сервера в текстовом формате
      * @return строка, удобная для чтения пользователем
      */
@@ -785,6 +803,7 @@ public class SpeechmaticsSDK {
 
     /**
      * Преобразует полученное от сервера значение даты/времени создания записи
+     * в удобный формат
      * @param createdAt ответ от сервера в текстовом формате
      * @param locale локаль для формирования даты
      * @return строка, удобная для чтения пользователем

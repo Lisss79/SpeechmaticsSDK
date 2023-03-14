@@ -6,6 +6,9 @@ import static com.lisss79.speechmaticssdk.JsonKeysValues.UNTIL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Статистика использования за период
+ */
 public class UsageStatistics {
 
     private String since;
