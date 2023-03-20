@@ -464,9 +464,13 @@ public class SpeechmaticsSDK {
             Message msg = new Message();
             msg.arg1 = GET_THE_TRANSCRIPT;
             String urlForTranscript = baseUrl + "/" + id + "/transcript?format=txt";
-            int responseCode = doQuery(urlForTranscript, GET);
+            int responseCode = HttpURLConnection.HTTP_NOT_FOUND;
+            String response = "";
+            if(!id.isEmpty()) {
+                responseCode = doQuery(urlForTranscript, GET);
+                response = getServerResponse(responseCode);
+            }
             msg.what = responseCode;
-            String response = getServerResponse(responseCode);
             msg.obj = response;
             msg.arg2 = requestCode;
             uiHandler.sendMessage(msg);
