@@ -292,6 +292,7 @@ public class SpeechmaticsSDK {
                     fileStatus = FileStatus.SENT;
                 } else {
                     fileStatus = FileStatus.SENDING_ERROR;
+                    msg.obj = response;
                 }
             }
 
