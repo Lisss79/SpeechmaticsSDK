@@ -246,7 +246,7 @@ public class SpeechmaticsSDK {
                     // Считывааем байт из входящего потока (файл) и записываем в исходящий (тело http запроса)
                     int i = 0;
                     int j = 0;
-                    int step = fileSize / 99;
+                    int step = fileSize / 9;
                     do {
                         nextByte = is.read();
                         if(nextByte != -1) os.write(nextByte);
@@ -254,7 +254,7 @@ public class SpeechmaticsSDK {
                             /// Текущее значение прогресса
                             submittingMsg = getProgressMessage(j);
                             uiHandler.sendMessage(submittingMsg);
-                            j++;
+                            j += 10;
                         }
                         i++;
                     } while (nextByte != -1);
