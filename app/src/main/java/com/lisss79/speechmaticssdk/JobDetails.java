@@ -46,7 +46,6 @@ public class JobDetails {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     public JobDetails(String response) {

@@ -14,6 +14,9 @@ public class JsonKeysValues {
     public final static String JOBS = "jobs";
     public final static String DURATION = "duration";
     public final static String ID = "id";
+    public final static String CODE = "code";
+    public final static String ERROR = "error";
+    public final static String DETAIL = "detail";
 
     // Для конфигурации
     public final static String TRANSCRIPTION_CONFIG = "transcription_config";
@@ -26,6 +29,7 @@ public class JsonKeysValues {
 
     // Для статистики
     public final static String SUMMARY = "summary";
+    public final static String DETAILS = "details";
     public final static String DURATION_HOURS = "duration_hrs";
     public final static String COUNT = "count";
     public final static String SINCE = "since";

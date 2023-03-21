@@ -51,9 +51,9 @@ public interface SpeechmaticsListener {
     /**
      * Callback после получения статистики GetStatistics
      * @param responseCode ответ сервера, 200 - успешно
-     * @param summaryStatistics данных статистики
+     * @param summaryStatistics данные статистики для разного качества
      */
-    void onGetStatisticsFinished(int responseCode, SummaryStatistics summaryStatistics, int requestCode);
+    void onGetStatisticsFinished(int responseCode, SummaryStatistics[] summaryStatistics, int requestCode);
 
     /**
      * Callback после создания работы SubmitJob

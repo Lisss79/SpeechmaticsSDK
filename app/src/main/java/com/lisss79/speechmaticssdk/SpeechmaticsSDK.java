@@ -1,8 +1,8 @@
 package com.lisss79.speechmaticssdk;
 
+import static com.lisss79.speechmaticssdk.JsonKeysValues.DETAILS;
 import static com.lisss79.speechmaticssdk.JsonKeysValues.ID;
 import static com.lisss79.speechmaticssdk.JsonKeysValues.JOBS;
-import static com.lisss79.speechmaticssdk.JsonKeysValues.SUMMARY;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -91,6 +91,7 @@ public class SpeechmaticsSDK {
     private final Handler uiHandler;
     private final SpeechmaticsListener listener;
     private final Context context;
+    private ErrorMessage errorMessage = new ErrorMessage();
 
     //Публичные глобальные переменные - данные аудиофайла и работы
     public String fileName = "";
@@ -153,7 +154,7 @@ public class SpeechmaticsSDK {
                 listener.onDeleteJobFinished(msg.what, (JobDetails) msg.obj);
                 break;
             case GET_STATISTICS:
-                listener.onGetStatisticsFinished(msg.what, (SummaryStatistics) msg.obj, msg.arg2);
+                listener.onGetStatisticsFinished(msg.what, (SummaryStatistics[]) msg.obj, msg.arg2);
                 break;
             case GET_THE_TRANSCRIPT:
                 listener.onGetTheTranscriptFinished(msg.what, (String) msg.obj, msg.arg2);
@@ -292,7 +293,6 @@ public class SpeechmaticsSDK {
                     fileStatus = FileStatus.SENT;
                 } else {
                     fileStatus = FileStatus.SENDING_ERROR;
-                    msg.obj = response;
                 }
             }
 
@@ -351,7 +351,12 @@ public class SpeechmaticsSDK {
                 String urlWithId = baseUrl + "/" + id;
                 responseCode = doQuery(urlWithId, GET);
                 response = getServerResponse(responseCode);
-            } else responseCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } else {
+                responseCode = HttpURLConnection.HTTP_NOT_FOUND;
+                errorMessage = new ErrorMessage();
+                errorMessage.setCode(responseCode);
+                errorMessage.setError("Id is empty");
+            }
             msg.what = responseCode;
             if(responseCode == HttpURLConnection.HTTP_OK) {
                 jobDetails = new JobDetails(response);
@@ -409,8 +414,10 @@ public class SpeechmaticsSDK {
         service.execute(() -> {
             Message msg = new Message();
             msg.arg1 = GET_STATISTICS;
-            int count = 0;
-            float duration_hours = 0;
+            int countStandart = 0;
+            float duration_hoursStandart = 0;
+            int countEnhanced = 0;
+            float duration_hoursEnhanced = 0;
             String url = statUrl;
             if (monthly) {
                 Calendar date = Calendar.getInstance();
@@ -428,28 +435,39 @@ public class SpeechmaticsSDK {
                 JSONObject jsonObject;
                 SummaryStatistics summaryStatistics;
                 try {
-                    jsonArray = new JSONObject(response).getJSONArray(SUMMARY);
+                    jsonArray = new JSONObject(response).getJSONArray(DETAILS);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = jsonArray.getJSONObject(i);
                         summaryStatistics = new SummaryStatistics(jsonObject);
                         JobType type = summaryStatistics.getType();
-                        if (type.equals(JobType.TRANSCRIPTION)) {
-                            count += summaryStatistics.getCount();
-                            duration_hours += summaryStatistics.getDuration_hrs();
+                        OperatingPoint op = summaryStatistics.getOperatingPoint();
+                        if (type.equals(JobType.TRANSCRIPTION) && op.equals(OperatingPoint.STANDARD)) {
+                            countStandart += summaryStatistics.getCount();
+                            duration_hoursStandart += summaryStatistics.getDuration_hrs();
+                        }
+                        if (type.equals(JobType.TRANSCRIPTION) && op.equals(OperatingPoint.ENHANCED)) {
+                            countEnhanced += summaryStatistics.getCount();
+                            duration_hoursEnhanced += summaryStatistics.getDuration_hrs();
                         }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            SummaryStatistics data = new SummaryStatistics();
-            data.setType(JobType.TRANSCRIPTION);
-            data.setCount(count);
-            data.setDuration_hrs(duration_hours);
-            msg.obj = data;
+            SummaryStatistics dataStandard = new SummaryStatistics();
+            dataStandard.setType(JobType.TRANSCRIPTION);
+            dataStandard.setOperatingPoint(OperatingPoint.STANDARD);
+            dataStandard.setCount(countStandart);
+            dataStandard.setDuration_hrs(duration_hoursStandart);
+            SummaryStatistics dataEnhanced = new SummaryStatistics();
+            dataEnhanced.setType(JobType.TRANSCRIPTION);
+            dataEnhanced.setOperatingPoint(OperatingPoint.ENHANCED);
+            dataEnhanced.setCount(countEnhanced);
+            dataEnhanced.setDuration_hrs(duration_hoursEnhanced);
+
+            msg.obj = new SummaryStatistics[]{dataStandard, dataEnhanced};
             msg.arg2 = requestCode;
             uiHandler.sendMessage(msg);
-            //listener.onGetStatisticsFinished(responseCode, data);
         });
     }
 
@@ -469,6 +487,10 @@ public class SpeechmaticsSDK {
             if(!id.isEmpty()) {
                 responseCode = doQuery(urlForTranscript, GET);
                 response = getServerResponse(responseCode);
+            } else {
+                errorMessage = new ErrorMessage();
+                errorMessage.setCode(responseCode);
+                errorMessage.setError("Id is empty");
             }
             msg.what = responseCode;
             msg.obj = response;
@@ -557,6 +579,8 @@ public class SpeechmaticsSDK {
                 while ((responseLine = br.readLine()) != null) {
                     responseSB.append(responseLine.trim()).append(CR);
                 }
+                errorMessage = new ErrorMessage();
+                errorMessage.setCode(responseCode);
                 if (responseSB.length() != 0) {
                     response = responseSB.toString();
                 }
@@ -566,7 +590,7 @@ public class SpeechmaticsSDK {
         }
 
         // Если другой код ответ сервера - получить текст ошибки
-        else if(responseCode != NO_DATA && connection != null) {
+        else if(responseCode >= 400 && responseCode <= 500 && connection != null) {
             try(BufferedReader br = new BufferedReader(
                     new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8))) {
                 StringBuilder responseSB = new StringBuilder();
@@ -576,11 +600,23 @@ public class SpeechmaticsSDK {
                 }
                 if (responseSB.length() != 0) {
                     response = responseSB.toString();
+                    errorMessage.parseString(response);
+                }
+                else {
+                    errorMessage = new ErrorMessage();
+                    errorMessage.setCode(responseCode);
                 }
             } catch (NullPointerException | IOException e) {
                 e.printStackTrace();
             }
         }
+
+        // Иначе - ответа от сервера не было
+        else {
+            errorMessage = new ErrorMessage();
+            errorMessage.setCode(NO_DATA);
+        }
+
         return response;
     }
 
@@ -723,6 +759,14 @@ public class SpeechmaticsSDK {
         }
         fileStatus = FileStatus.SELECTED;
         return true;
+    }
+
+    /**
+     * Возвращает последнюю ошибку, полученную от сервера
+     * @return класс ошибки
+     */
+    public ErrorMessage getErrorMessage() {
+        return errorMessage;
     }
 
     /**
